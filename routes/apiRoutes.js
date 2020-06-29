@@ -22,7 +22,7 @@ router.get("/notes", function (req, res) {
 
 router.post("/notes", function (req, res) {
   var newNotesArr = {
-    "id": Math.floor(Math.random() + db.length+1),
+    "id": Math.floor(Math.random() + db.length)+1,
     "title": req.body.title,
     "text": req.body.text
   }
@@ -34,21 +34,31 @@ router.post("/notes", function (req, res) {
     if (err) {
       throw err
     }
-    res.json(stringify(db));
+    res.json(db);
   })
 }
 );
 
 // Function to delete notes from db.Json file and rewriting
 
-router.delete('/notes/:_id', function (req, res) {
-  var id = req.params._id;
-  newNotesArr.removeNewNotesArr(id, function (err, newNotesArr) {
+router.delete('/notes/:id', function (req, res) {
+  var id = req.params.id;
+  console.log("Delete route",id)
+  var array = [];
+  for (let index = 0; index < db.length; index++) {
+   if(db[index].id !=id){
+       array.push(db[index])
+   }
+    
+  }
+  db = array;
+  console.log(db);
+  fs.writeFileSync("./db/db.json",JSON.stringify(db), (err, data) => {
     if (err) {
-      throw err;
+      throw err
     }
-    res.json(newNotesArr);
-  });
+    res.json(db);
+  })
 });
 
 module.exports = router;
